@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>游戏列表</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}" />
+    <style>
+        @font-face {
+            font-family: Cyber;
+            src:url("/font/Cyberpunk-Regular.ttf")
+        }
+        body {
+            background: #000000;
+            color: #fff;
+        }
+        main,
+        .container {
+            background-color: inherit;
+        }
+        .navbar {
+            background-color: transparent;
+        }
+
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .navbar {
+            background-color: transparent;
+        }
+        .navbar a {
+            color: #c0c0c0;
+            font-weight: bold;
+            margin: 0 50px; /* 增加链接之间的间距 */
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+        /* 实现文字切割的代码开始 */
+        .navbar a::before,
+        .navbar a::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .navbar a::before {
+            top: 0;
+            color: #c0c0c0;
+            clip-path: inset(60% 0 0 0);
+        }
+
+        .navbar a::after {
+            bottom: 0;
+            color: #c0c0c0;
+            clip-path: inset(0 0 40% 0);
+        }
+
+        .navbar a:hover::before,
+        .navbar a:hover::after {
+            color: yellow;
+        }
+
+        .navbar a:hover::before {
+            transform: translateX(-10%);
+        }
+
+        .navbar a:hover::after {
+            transform: translateX(10%);
+        }
+
+        .navbar a span {
+            visibility: hidden;
+        }
+        /* 实现文字切割的代码结束 */
+        .game-list {
+            height: 100vh; /* 设置图片列表高度 */
+            overflow-y: scroll; /* 添加垂直滚动条 */
+            scrollbar-width: none; /* Firefox 专用 */
+            -ms-overflow-style: none; /* IE/Edge 专用 */
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .game-item {
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .game-item img {
+            width: 100%; /* 图片宽度设为100% */
+            transition: transform 0.2s;
+        }
+        .game-item img:hover {
+            transform: scale(1.02); /* 鼠标悬停时图片放大 */
+        }
+        .game-name {
+            text-align: center;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        .game-info {
+            padding: 20px;
+        }
+        .game-description {
+            display: none; /* 默认不显示介绍 */
+        }
+        .active-description {
+            display: block; /* 激活时显示介绍 */
+        }
+        .centered {
+            transform: scale(1.2); /* 中间图片放大 */
+            opacity: 1;
+        }
+        .side {
+            transform: scale(0.8); /* 两边图片缩小 */
+            opacity: 0.6;
+        }
+        .game-info-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%; /* Adjust the height as needed */
+            padding: 20px; /* Adjust the padding as needed */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <nav class="navbar justify-content-between">
+        <img src="/pic/OIP-C.jpg" alt="LOGO" style="height: 100px;">
+        <div>
+            <a href="/order-management/orders" data-text="ORDERS" style="font-family: Cyber; "><span>ORDERS</span></a>
+
+        </div>
+    </nav>
+    <nav class="navbar justify-content-center">
+        <a href="/home/" data-text="HOME" style="font-family: Cyber; font-size: 50px"><span>HOME</span></a>
+        <a href="/games" data-text="GAME" style="font-family: Cyber; font-size: 50px"><span>GAME</span></a>
+        <a href="/review" data-text="COMMENTS" style="font-family: Cyber; font-size: 50px"><span>COMMENTS</span></a>
+
+        <a th:href="@{/home/rooms}" th:if="${loginRequired}" data-text="RESERVATION" style="font-family: Cyber; font-size: 50px"><span>RESERVATION</span></a>
+
+        <a th:href="@{/home/rooms}" th:unless="${loginRequired}" data-text="RESERVATION" style="font-family: Cyber; font-size: 50px"><span>RESERVATION</span></a>
+        <a th:href="@{/home/suggestions}" th:if="${loginRequired}" data-text="SUGGESTION" style="font-family: Cyber; font-size: 50px"><span>SUGGESTION</span></a>
+        <a th:href="@{/home/suggestions}" th:unless="${loginRequired}" data-text="SUGGESTION" style="font-family: Cyber; font-size: 50px"><span>SUGGESTION</span></a>
+    </nav>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 game-list">
+            <!-- 游戏列表 -->
+            <div th:each="game, iterStat : ${games}" class="game-item"
+                 th:data-game-id="${game.game_id}"
+                 th:data-game-description="${game.game_description}">
+                <img th:src="'data:image/jpeg;base64,' + ${game.getGameImageBase64()}"
+                     onerror="this.src='default_game_image.png'"
+                     alt="Game Image" class="img-fluid"/>
+                <div class="game-name" th:text="${game.game_name}"></div>
+            </div>
+        </div>
+        <div class="col-md-9 game-info">
+            <div class="game-info-container text-center">
+                <h2 id="currentGameName" class="game-description"></h2>
+                <p id="currentGameDescription" class="game-description"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script>
+    $(document).ready(function() {
+        function updateGameItemStyles() {
+            var items = $('.game-item');
+            var windowHeight = $(window).height();
+            var centerY = windowHeight / 2;
+
+            items.each(function() {
+                var item = $(this);
+                var itemOffset = item.offset().top;
+                var itemHeight = item.height();
+                var itemCenterY = itemOffset + itemHeight / 2;
+                var distanceFromCenter = Math.abs(centerY - itemCenterY);
+                var scale = 1 - (distanceFromCenter / centerY) * 0.4;
+                var opacity = 1 - (distanceFromCenter / centerY) * 0.4;
+
+                item.css({
+                    transform: 'scale(' + scale + ')',
+                    opacity: opacity
+                });
+
+                if (distanceFromCenter < itemHeight / 2) {
+                    item.addClass('centered').removeClass('side');
+                    var gameName = item.find('.game-name').text();
+                    var gameDescription = item.data('game-description');
+                    $('#currentGameName').text(gameName);
+                    $('#currentGameDescription').text(gameDescription);
+                    $('.game-description').addClass('active-description');
+                } else {
+                    item.addClass('side').removeClass('centered');
+                }
+            });
+        }
+
+        $('.game-list').on('scroll', function() {
+            updateGameItemStyles();
+        });
+
+        updateGameItemStyles();
+    });
+</script>
+</body>
+</html>

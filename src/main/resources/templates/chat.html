@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客服</title>
+    <!-- 引入Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/5.1.3/css/bootstrap.min.css}" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: Cyber;
+            src:url("/font/Cyberpunk-Regular.ttf")
+        }
+        body {
+            background: #000000;
+            color: #000000;
+        }
+        main,
+        .container {
+            background-color: inherit;
+        }
+        .navbar {
+            background-color: transparent;
+            display: flex; /* 使用 Flexbox 布局 */
+            align-items: center; /* 垂直居中对齐内容 */
+            justify-content: space-between; /* 在两端对齐内容 */
+        }
+
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .navbar a {
+            color: #c0c0c0;
+            font-weight: bold;
+            margin: 0 50px; /* 增加链接之间的间距 */
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+
+        /* 实现文字切割的代码开始 */
+        .navbar a::before,
+        .navbar a::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .navbar a::before {
+            top: 0;
+            color: #c0c0c0;
+            clip-path: inset(60% 0 0 0);
+        }
+
+        .navbar a::after {
+            bottom: 0;
+            color: #c0c0c0;
+            clip-path: inset(0 0 40% 0);
+        }
+
+        .navbar a:hover::before,
+        .navbar a:hover::after {
+            color: yellow;
+        }
+
+        .navbar a:hover::before {
+            transform: translateX(-10%);
+        }
+
+        .navbar a:hover::after {
+            transform: translateX(10%);
+        }
+
+        .navbar a span {
+            visibility: hidden;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #000000;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #c0c0c0;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #2c2c2c;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px; /* 增加头像和对话之间的间距 */
+        }
+
+        .message .avatar img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .message .text {
+            background: #e6e6e6;
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 70%;
+        }
+
+        .message.user .text {
+            background: #fff;
+            color: #000000;
+            margin-left: auto;
+        }
+
+        .input-group {
+            display: flex; /* 使用 Flexbox 布局 */
+            padding: 15px;
+            background: #2c2c2c;
+            border-top: 1px solid #ddd;
+        }
+
+        .input-group .form-control {
+            border-radius: 20px;
+            flex: 1; /* 使输入框占据剩余空间 */
+            margin-right: 10px; /* 增加输入框和按钮之间的间距 */
+        }
+
+        .input-group .btn {
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar justify-content-between">
+    <!-- LOGO图片 -->
+    <img src="/pic/OIP-C.jpg" alt="LOGO" style="height: 100px;">
+    <!-- 返回链接 -->
+    <a href="/home/" data-text="BACK" style="font-family: Cyber; "><span>BACK</span></a>
+</nav>
+<div class="chat-container">
+    <div class="chat-header">
+        客服
+    </div>
+    <div class="chat-box" id="chatBox">
+        <!-- 聊天消息示例 -->
+        <div class="message">
+            <div class="avatar">
+                <img src="https://via.placeholder.com/40" alt="用户A">
+            </div>
+            <div class="text">您好，请问您有什么问题？</div>
+        </div>
+
+        <!-- 实际的聊天消息将动态添加到这里 -->
+    </div>
+    <div class="input-group">
+        <input id="text" type="text" class="form-control" placeholder="输入消息..." aria-label="Recipient's username" aria-describedby="button-addon2">
+        <div class="input-group-append">
+            <button onclick="send()" class="btn btn-primary" type="button" id="sendButton">发送</button>
+        </div>
+    </div>
+</div>
+<div id="message"></div>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:src="@{/webjars/bootstrap/5.1.3/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript">
+    let websocket = null;
+    //判断当前浏览器是否支持WebSocket
+    if ('WebSocket' in window) {
+        //改成你的地址
+        websocket = new WebSocket("ws://127.0.0.1:8080/api/websocket/100");
+    } else {
+        alert('当前浏览器 Not support websocket')
+    }
+
+    //连接发生错误的回调方法
+    websocket.onerror = function () {
+        setMessageInnerHTML("WebSocket连接发生错误");
+    };
+
+    //连接成功建立的回调方法
+    websocket.onopen = function () {
+    }
+    //接收到消息的回调方法
+    websocket.onmessage = function (event) {
+        console.log(event);
+        console.log(event.data);
+        addChatMessage(event.data, false);
+    }
+
+    //连接关闭的回调方法
+    websocket.onclose = function () {
+        setMessageInnerHTML("WebSocket连接关闭");
+    }
+
+    //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+    window.onbeforeunload = function () {
+        closeWebSocket();
+    }
+
+    //将消息显示在网页上
+    function setMessageInnerHTML(innerHTML) {
+        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    }
+
+    //关闭WebSocket连接
+    function closeWebSocket() {
+        websocket.close();
+    }
+
+    //发送消息
+    function send() {
+        const message = document.getElementById('text').value;
+        websocket.send(message);
+        addChatMessage(message, true);
+    }
+
+    function addChatMessage(messageText, isUser) {
+        var chatContainer = document.querySelector('.chat-box');
+        var messageDiv = document.createElement('div');
+        messageDiv.className = 'message' + (isUser ? ' user' : '');
+
+        var textSpan = document.createElement('div');
+        textSpan.className = 'text';
+        textSpan.textContent = messageText;
+
+        var avatarDiv = document.createElement('div');
+        avatarDiv.className = 'avatar';
+        avatarDiv.innerHTML = '<img src="https://via.placeholder.com/40" alt="用户">';
+
+        if (isUser) {
+            messageDiv.appendChild(textSpan);
+            messageDiv.appendChild(avatarDiv);
+        } else {
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(textSpan);
+        }
+
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+</script>
+</body>
+</html>

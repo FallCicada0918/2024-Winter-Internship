@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>销售额柱状图</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #000; /* 设置背景颜色为黑色 */
+            color: #fff; /* 设置文本颜色为白色 */
+        }
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60vh;
+            width: 100%;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .button-container button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button-container button:hover {
+            background-color: #0056b3;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>销售额柱状图</h2>
+    <div class="button-container">
+        <button onclick="showMonthlySales()">查看当前年份每月销售额</button>
+        <button onclick="showLastMonthDailySales()">查看上月每日销售额</button>
+        <button onclick="showRoomSelection()">查看房间选择情况</button>
+    </div>
+    <div class="chart-container">
+        <canvas id="salesChart"></canvas>
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener("DOMContentLoaded", function() {
+        var ctx = document.getElementById('salesChart').getContext('2d');
+        var chart = null; // 定义chart变量在全局作用域内
+
+        var dailySales = /*[[${dailySales}]]*/ {};
+        var monthlySales = /*[[${monthlySales}]]*/ {};
+        var lastMonthDailySales = /*[[${lastMonthDailySales}]]*/ {};
+        var roomSelection = /*[[${roomSelection}]]*/ {};
+
+        function renderChart(labels, data, label, type = 'bar') {
+            if (chart) {
+                chart.destroy();
+            }
+            chart = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: type === 'pie' ? [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ] : 'rgba(75, 192, 192, 0.2)',
+                        borderColor: type === 'pie' ? [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ] : 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: type === 'bar' ? {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#fff' // 设置Y轴刻度颜色为白色
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#fff' // 设置X轴刻度颜色为白色
+                            }
+                        }
+                    } : {},
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#fff' // 设置图例标签颜色为白色
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.showMonthlySales = function() {
+            var labels = Object.keys(monthlySales);
+            var data = Object.values(monthlySales);
+            renderChart(labels, data, '每月销售额');
+        }
+
+        window.showLastMonthDailySales = function() {
+            var labels = Object.keys(lastMonthDailySales);
+            var data = Object.values(lastMonthDailySales);
+            renderChart(labels, data, '上月每日销售额');
+        }
+
+        window.showRoomSelection = function() {
+            var labels = Object.keys(roomSelection);
+            var data = Object.values(roomSelection);
+            renderChart(labels, data, '房间选择情况', 'pie');
+        }
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

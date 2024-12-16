@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>订单列表</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}" />
+    <style>
+        @font-face {
+            font-family: Cyber;
+            src:url("/font/Cyberpunk-Regular.ttf")
+        }
+        .btn-toggle.collapsed svg {
+            color: white;
+        }
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .btn-toggle,
+        .link {
+            color: white;
+        }
+        .card {
+            background-color: #2f2f2f;
+            color: #b3b3b3;
+            border: 1px solid #4d4d4d;
+            border-radius: 10px;
+        }
+
+        body {
+            background: #000000;
+            color: #fff;
+        }
+        @media (max-width: 768px) {
+            .card {
+                max-width: 100%;
+            }
+        }
+        .custom-card {
+            background-color: #2f2f2f;
+            border-color: #2f2f2f;
+        }
+        .navbar {
+            background-color: transparent;
+        }
+
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .navbar {
+            background-color: transparent;
+        }
+        .navbar a {
+            color: #c0c0c0;
+            font-weight: bold;
+            margin: 0 50px; /* 增加链接之间的间距 */
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+        /* 实现文字切割的代码开始 */
+        .navbar a::before,
+        .navbar a::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .navbar a::before {
+            top: 0;
+            color: #c0c0c0;
+            clip-path: inset(60% 0 0 0);
+        }
+
+        .navbar a::after {
+            bottom: 0;
+            color: #c0c0c0;
+            clip-path: inset(0 0 40% 0);
+        }
+
+        .navbar a:hover::before,
+        .navbar a:hover::after {
+            color: yellow;
+        }
+
+        .navbar a:hover::before {
+            transform: translateX(-10%);
+        }
+
+        .navbar a:hover::after {
+            transform: translateX(10%);
+        }
+
+        .navbar a span {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <nav class="navbar justify-content-between">
+        <img src="/pic/OIP-C.jpg" alt="LOGO" style="height: 100px;">
+        <div>
+            <a href="/order-management/orders" data-text="ORDERS" style="font-family: Cyber; "><span>ORDERS</span></a>
+        </div>
+    </nav>
+    <nav class="navbar justify-content-center">
+        <a href="/home/" data-text="HOME" style="font-family: Cyber; font-size: 50px"><span>HOME</span></a>
+        <a href="/games" data-text="GAME" style="font-family: Cyber; font-size: 50px"><span>GAME</span></a>
+        <a href="/review" data-text="COMMENTS" style="font-family: Cyber; font-size: 50px"><span>COMMENTS</span></a>
+
+        <a th:href="@{/home/rooms}" th:if="${loginRequired}" data-text="RESERVATION" style="font-family: Cyber; font-size: 50px"><span>RESERVATION</span></a>
+
+        <a th:href="@{/home/rooms}" th:unless="${loginRequired}" data-text="RESERVATION" style="font-family: Cyber; font-size: 50px"><span>RESERVATION</span></a>
+        <a th:href="@{/home/suggestions}" th:if="${loginRequired}" data-text="SUGGESTION" style="font-family: Cyber; font-size: 50px"><span>SUGGESTION</span></a>
+        <a th:href="@{/home/suggestions}" th:unless="${loginRequired}" data-text="SUGGESTION" style="font-family: Cyber; font-size: 50px"><span>SUGGESTION</span></a>
+    </nav>
+</div>
+<div class="container mt-5 text-center">
+    <h1 class="mb-4">我的订单</h1>
+    <div th:each="order : ${orders}" class="card custom-card card-container">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2">
+                    <p class="card-text"><strong>房间类型</strong></p>
+                    <p class="card-text" th:text="${order.room_type}"></p>
+                    <p class="card-text"><strong>容纳人数</strong></p>
+                    <p class="card-text" th:text="${order.room_capacity}"></p>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center flex-column">
+                    <p class="card-text"><strong>入住时间</strong></p>
+                    <p class="card-text" th:text="${order.check_in_time}"></p>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center flex-column">
+                    <p class="card-text"><strong>退房时间</strong></p>
+                    <p class="card-text" th:text="${order.check_out_time}"></p>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center flex-column">
+                    <p class="card-text"><strong>订单状态</strong></p>
+                    <p class="card-text" th:text="${order.order_status}"></p>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center flex-column order-actions">
+                    <form th:action="@{/order-management/orders/cancel/(orderId=${order.order_id})}" method="post" th:if="${order.getCheckInTimeAsDate().after(#dates.createNow())}">
+                        <button type="submit" class="btn btn-danger btn-sm">退订</button>
+                    </form>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center flex-column">
+                    <form th:action="@{/order-management/orders/complete/(orderId=${order.order_id})}" method="post" th:if="${order.getCheckOutTimeAsDate().before(#dates.createNow())}">
+                        <button type="submit" class="btn btn-success btn-sm">退房</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Hotel Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            width: 200px;
+            float: left;
+            margin-right: 20px;
+        }
+        .content {
+            margin-left: 0; /* 确保与菜单按钮左对齐 */
+        }
+        .offcanvas {
+            width: 250px;
+            background-color: black;
+            color: white;
+        }
+        .info-block {
+            background-color: #4169E1;
+            color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+        }
+        .header h1 {
+            margin-right: 20px;
+        }
+        .header img {
+            width: 474px;
+            height: 266px;
+        }
+        .modal-content {
+            background-color: black;
+            color: white;
+        }
+        .btn-close-white {
+            filter: invert(1);
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="header">
+        <img th:src="@{/pic/OIP-C.jpg}">
+        <h1>Hotel Management System</h1>
+    </div>
+    <div class="navbar">
+        <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">菜单</button>
+    </div>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasMenuLabel">菜单</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/esports-equipment/'">设备管理</button>
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/rooms'">房间管理</button>
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/order-management/'">订单管理</button>
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/sales'">财务报表</button>
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/suggestion/'">用户建议</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>Customer Suggestions Management</h2>
+
+        <!-- Display Result -->
+        <div th:if="${allcustomerSuggestion}">
+            <div th:each="suggestion : ${allcustomerSuggestion}" class="info-block">
+                <p><strong>ID:</strong> <span th:text="${suggestion.suggestion_id}"></span></p>
+                <p><strong>Order ID:</strong> <span th:text="${suggestion.order_id}"></span></p>
+                <p><strong>Feedback Content:</strong> <span th:text="${suggestion.feedback_content}"></span></p>
+                <p><strong>Date:</strong> <span th:text="${suggestion.date}"></span></p>
+            </div>
+        </div>
+        <div th:if="${customerSuggestion}">
+            <div class="info-block">
+                <p><strong>ID:</strong> <span th:text="${customerSuggestion.suggestion_id}"></span></p>
+                <p><strong>Order ID:</strong> <span th:text="${customerSuggestion.order_id}"></span></p>
+                <p><strong>Feedback Content:</strong> <span th:text="${customerSuggestion.feedback_content}"></span></p>
+                <p><strong>Date:</strong> <span th:text="${customerSuggestion.date}"></span></p>
+            </div>
+        </div>
+
+        <!-- Get Button -->
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#getModal">查询建议</button>
+    </div>
+</div>
+
+<!-- Get Modal -->
+<div class="modal fade" id="getModal" tabindex="-1" aria-labelledby="getModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="getModalLabel">查询建议</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="getForm" th:action="@{/suggestion/select}" method="get">
+                    <div class="mb-3">
+                        <label for="suggestionId" class="form-label">Enter ID:</label>
+                        <input type="number" class="form-control" id="suggestionId" name="suggestionId">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Get Suggestion</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

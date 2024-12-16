@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>评论</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <style>
+
+        @font-face {
+            font-family: Cyber;
+            src:url("/font/Cyberpunk-Regular.ttf")
+        }
+        body {
+            background: #000000;
+            color: #fff;
+        }
+        #loginModal .modal-content {
+            background: linear-gradient(to bottom, #031633, #2c2c2c);
+            color: white;
+        }
+
+        #registrationModal .modal-content {
+            background: linear-gradient(to bottom, #031633, #2c2c2c);
+            color: white;
+        }
+
+        .modal{
+            background: linear-gradient(to bottom, #000000, #2c2c2c);
+            color: #fff;
+        }
+        .navbar {
+            background-color: transparent;
+        }
+        .navbar a {
+            color: #c0c0c0;
+            font-weight: bold;
+            margin: 0 40px; /* 增加链接之间的间距 */
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+        /* 实现文字切割的代码开始 */
+        .navbar a::before,
+        .navbar a::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .navbar a::before {
+            top: 0;
+            color: #c0c0c0;
+            clip-path: inset(60% 0 0 0);
+        }
+
+        .navbar a::after {
+            bottom: 0;
+            color: #c0c0c0;
+            clip-path: inset(0 0 40% 0);
+        }
+
+        .navbar a:hover::before,
+        .navbar a:hover::after {
+            color: yellow;
+        }
+
+        .navbar a:hover::before {
+            transform: translateX(-10%);
+        }
+
+        .navbar a:hover::after {
+            transform: translateX(10%);
+        }
+
+        .navbar a span {
+            visibility: hidden;
+        }
+        /* 小方框样式 */
+        .comment {
+            border: 1px solid #ccc; /* 添加边框 */
+            padding: 10px; /* 添加内边距 */
+            margin: 0 80px 30px; /* 设置左右间隔为 20px，评论之间的间隔为 30px */
+            background:#333333;
+            border-radius: 10px; /* 设置四个角为圆 */
+        }
+        .getreviews {
+            max-height: 300px; /* 设置评论展示区域的最大高度为 300px */
+            overflow-y: auto; /* 设置垂直滚动条 */
+            margin-bottom: 30px; /* 添加评论区块的底部间距 */
+            scrollbar-width: none; /* Firefox 专用 */
+            -ms-overflow-style: none; /* IE/Edge 专用 */
+        }
+        /* 输入框样式 */
+        textarea {
+            border: 1px solid #ccc; /* 添加边框 */
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
+            border-radius: 10px; /* 设置四个角为圆 */
+            background: #333333; /* 设置背景颜色为白色 */
+            color: white; /* 设置文本颜色为白色 */
+            padding: 10px; /* 添加内边距 */
+        }
+        /* 提交按钮样式 */
+        button {
+            background-color: #555;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #333;
+        }
+        body {
+            background: #000000;
+            color: #fff;
+        }
+        #loginModal .modal-content {
+            background: linear-gradient(to bottom,#032830, #031633,#000000, #2c2c2c);
+            color: white;
+        }
+
+        #registrationModal .modal-content {
+            background: linear-gradient(to bottom,#032830, #031633,#000000, #2c2c2c);
+            color: white;
+        }
+
+        .modal{
+            background: linear-gradient(to bottom, #000000, #2c2c2c);
+            color: #fff;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+        .circle-menu a {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(to bottom,#842029 ,#2c0b0e,#051b11,#2b3035);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        .circle-menu a:hover {
+            transform: scale(1.2);
+        }
+
+        .game img, .room img {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+
+        .custom-link span {
+            visibility: hidden;
+        }
+
+    </style>
+</head>
+<body>
+<!-- 上半页展示评论 -->
+<div class="container mt-5">
+    <nav class="navbar justify-content-between">
+        <img src="/pic/OIP-C.jpg" alt="LOGO" style="height: 100px;">
+        <div>
+            <a href="/order-management/orders" data-text="ORDERS" style="font-family: Cyber; "><span>ORDERS</span></a>
+            <a th:if="${loginSuccess}" href="/review/myreview" data-text="MyReview" style="font-family: Cyber; "><span>MyReview</span></a>
+        </div>
+    </nav>
+    <nav class="navbar justify-content-center">
+        <a href="/home/" data-text="HOME" style="font-family: Cyber; font-size: 50px"><span>HOME</span></a>
+        <a href="/games" data-text="GAME" style="font-family: Cyber; font-size: 50px"><span>GAME</span></a>
+        <a href="/review" data-text="COMMENTS" style="font-family: Cyber; font-size: 50px"><span>COMMENTS</span></a>
+
+        <a th:href="@{/home/rooms}" th:if="${loginRequired}" data-text="RESERVATION" style="font-family: Cyber; font-size: 50px"><span>RESERVATION</span></a>
+
+        <a th:href="@{/home/rooms}" th:unless="${loginRequired}" data-text="RESERVATION" style="font-family: Cyber; font-size: 50px"><span>RESERVATION</span></a>
+        <a th:href="@{/home/suggestions}" th:if="${loginRequired}" data-text="SUGGESTION" style="font-family: Cyber; font-size: 50px"><span>SUGGESTION</span></a>
+        <a th:href="@{/home/suggestions}" th:unless="${loginRequired}" data-text="SUGGESTION" style="font-family: Cyber; font-size: 50px"><span>SUGGESTION</span></a>
+
+    </nav>
+</div>
+<div>
+    <div class="getreviews" th:if="${reviews != null and not #lists.isEmpty(reviews)}">
+        <div th:each="review : ${reviews}">
+            <div class="comment">
+                <p class="username"><span th:text="${review.customer_account}"></span>：</p>
+                <p th:text="${review.review_content}"></p>
+            </div>
+        </div>
+    </div>
+    <div th:if="${reviews == null or #lists.isEmpty(reviews)}">
+        <p th:text="${error}"></p>
+    </div>
+</div>
+
+<!-- 下半页输入框 -->
+<div class="container mt-5">
+    <form th:action="@{/review/addreview}" method="post">
+        <input type="hidden" name="customer_id" th:value="${session.user?.customer_id}" />
+        <textarea name="review_content" placeholder="我也要评论"></textarea>
+        <div th:if="${!loginSuccess}">
+            <a href="#" data-toggle="modal" data-target="#loginModal">请您先登录</a>
+        </div>
+        <div th:if="${loginSuccess}">
+            <button type="submit" class="btn btn-primary">提交评论</button>
+        </div>
+    </form>
+</div>
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">登录</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/home/login}" method="post" id="loginForm">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" class="form-control" id="username" name="username" required placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="请输入密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="userType">用户类型</label>
+                        <select class="form-control" id="userType" name="userType">
+                            <option value="user">顾客</option>
+                            <option value="manager">管理员</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">登录</button>
+                    <button type="button" class="btn btn-secondary" onclick="logout()">退出登录</button>
+                    <a href="#" onclick="showRegistrationModal()">注册</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="registrationModal" tabindex="-1" role="dialog" aria-labelledby="registrationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registrationModalLabel">注册</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/home/register}" method="post" id="registrationForm" onsubmit="return handleFormSubmit(event)">
+                    <!-- Existing form fields -->
+                    <div class="form-group">
+                        <label for="newUsername">用户名</label>
+                        <input type="text" class="form-control" id="newUsername" name="newUsername" required placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">密码</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required placeholder="请输入密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="idCardNumber">身份证</label>
+                        <input type="text" class="form-control" id="idCardNumber" name="idCardNumber" required placeholder="请输入身份证号码">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="请输入姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">手机号</label>
+                        <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required placeholder="请输入手机号">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" class="form-control" id="email" name="email" required placeholder="请输入邮箱">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="sendVerificationCode()">发送验证码</button>
+                    <div class="form-group mt-3">
+                        <label for="verificationCode">验证码</label>
+                        <input type="text" class="form-control" id="verificationCode" name="verificationCode" required placeholder="请输入验证码">
+                    </div>
+                    <!-- New agreement section -->
+                    <div class="form-group mt-3">
+                        <input type="checkbox" id="agreementCheckbox" required>
+                        <label for="agreementCheckbox">我已阅读并同意 <a href="#" data-toggle="modal" data-target="#agreementModal">用户协议</a></label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">注册</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agreement Modal -->
+<div class="modal fade" id="agreementModal" tabindex="-1" role="dialog" aria-labelledby="agreementModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="agreementModalLabel" style="color: black;">用户协议</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="color: black;">
+                <p>一、【协议的范围】
+                    1.1 本协议是您与腾讯之间关于您注册、登录、使用本产品，以及使用本服务所订立的协议。
+
+                    1.2 本协议的内容，包括但不限于以下与本产品和/或本服务相关的协议、规则、规范、条款及腾讯已经发布的或将来可能发布的各类协议、规则、规范、条款等，包括但不限于《腾讯统一身份隐私保护指引》。所有规则为本协议不可分割的一部分，与协议正文具有同等法律效力。腾讯有权根据需要不定时地制定、修改本协议或各类规则，如本协议及规则有任何变更，一切变更以本产品最新公布的内容为准。经修订的协议、规则一经公布，立即自动生效，对新协议、规则生效之后注册的用户发生法律效力。对于协议、规则生效之前注册的用户，若用户在新规则生效后继续使用本产品提供的各项服务，则表明用户已充分阅读并认可和同意遵守新的协议或规则。若您拒绝接受新的协议和规则，您必须放弃使用腾讯统一身份提供的各项服务。
+
+                    1.3 如果您是企业用户，鉴于企业可以定制化某些服务或功能，当本协议规定的与您所在企业所提供的相关服务、说明等不一致时，请以您所在企业提供的为准。
+
+                    二、【关于本产品和本服务】
+                    2.1 本产品是指腾讯开发并按照本协议及腾讯其他协议、规则之约定授权用户注册、登录、使用的腾讯统一身份产品
+
+                    2.1.1 用户可以通过本产品使用应用门户、单点登录、主职架构管理等服务，具体服务以本平台实时提供的为准。
+
+                    2.1.2 用户可以创建自己的企业，并且发送激活链接邀请相关人员加入。收到邀请的人员按本服务要求完成注册后即可加入相关企业。团队创建者拥有企业成员权限管理、企业信息修改等企业管理权限。
+
+                    2.2 您知晓并同意，腾讯可能会根据需要更新或调整本服务的内容。
+
+                    2.3 您可以通过电脑、手机等终端以客户端、网页等形式使用本服务，具体以腾讯提供的为准，同时，腾讯会不断丰富您使用本服务的终端、形式等。当您使用本服务时，您应选择与您的终端、系统等相匹配的本产品版本，否则，您可能无法正常使用本服务。
+
+                    2.4 如您是企业用户，您可以申请腾讯统一身份企业账号并设置管理账号，您可通过该管理账号上传和管理组织成员架构，邀请组织成员加入成为您的最终用户。
+
+                    2.5 腾讯给予您一项不可转让及非排他性的许可，以按照本协议及腾讯其他协议、规则限定的范围和方式使用本产品。
+
+                    2.5.1 您可以为非商业目的在单一台终端设备上注册、登录、使用本产品。
+
+                    2.5.2 本条及本协议其他条款未明示授权的其他一切权利仍由腾讯保留，您在行使这些权利时须另外取得腾讯的书面许可。腾讯如果未行使前述任何权利，并不构成对该权利的放弃。
+
+                    2.6 腾讯可能根据实际需要对本服务中收费服务的收费标准、方式进行修改和变更，腾讯也可能会对部分免费服务开始收费。前述修改、变更或开始收费前，腾讯将在相应服务页面进行提前通知或公告。如果您不同意上述修改、变更或付费内容，您可以选择停止使用该服务。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function showRegistrationModal() {
+        $('#registrationModal').modal('show');
+    }
+    function logout() {
+        fetch('/home/logout', { // 修改为正确的后端路由
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("成功退出登录");
+                    window.location.href = "/home/"; // 重定向到主页，根据实际路径修改
+                } else {
+                    throw new Error('退出登录失败');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("退出登录失败，请稍后重试");
+            });
+    }
+
+    // 假设loginSuccess是从后端传递过来的登录成功标志
+    var loginSuccess = [[${loginSuccess}]];
+    handleLoginResponse(loginSuccess);
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>

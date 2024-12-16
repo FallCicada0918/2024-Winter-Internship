@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>电竞酒店主页</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <style>
+
+        @font-face {
+            font-family: Cyber;
+            src:url("/font/Cyberpunk-Regular.ttf")
+        }
+        body {
+            background: linear-gradient(to bottom, #000000, #2c2c2c);
+            color: #fff;
+        }
+        #loginModal .modal-content {
+            background: linear-gradient(to bottom, #031633, #2c2c2c);
+            color: white;
+        }
+
+        #registrationModal .modal-content {
+            background: linear-gradient(to bottom, #031633, #2c2c2c);
+            color: white;
+        }
+
+        .modal{
+            background: linear-gradient(to bottom, #000000, #2c2c2c);
+            color: #fff;
+        }
+        .navbar {
+            background-color: transparent;
+        }
+        .navbar a {
+            color: #c0c0c0;
+            font-weight: bold;
+            margin: 0 40px; /* 增加链接之间的间距 */
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+        /* 实现文字切割的代码开始 */
+        .navbar a::before,
+        .navbar a::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .navbar a::before {
+            top: 0;
+            color: #c0c0c0;
+            clip-path: inset(60% 0 0 0);
+        }
+
+        .navbar a::after {
+            bottom: 0;
+            color: #c0c0c0;
+            clip-path: inset(0 0 40% 0);
+        }
+
+        .navbar a:hover::before,
+        .navbar a:hover::after {
+            color: yellow;
+        }
+
+        .navbar a:hover::before {
+            transform: translateX(-10%);
+        }
+
+        .navbar a:hover::after {
+            transform: translateX(10%);
+        }
+
+        .navbar a span {
+            visibility: hidden;
+        }
+        /* 实现文字切割的代码结束 */
+        .carousel-item img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+        /*.circle-menu {*/
+        /*    position: relative;*/
+        /*    height: 300px;*/
+        /*    margin: 20px 0;*/
+        /*    display: flex;*/
+        /*    justify-content: center; !* 水平居中 *!*/
+        /*    align-items: center; !* 垂直居中 *!*/
+        /*}*/
+        /*.circle-menu a {*/
+        /*    position: absolute;*/
+        /*    border-radius: 50%;*/
+        /*    background: linear-gradient(to bottom,#842029 ,#2c0b0e,#051b11,#2b3035);*/
+        /*    color: white;*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*    justify-content: center;*/
+        /*    text-decoration: none;*/
+        /*    font-size: 18px;*/
+        /*    transition: transform 0.3s;*/
+        /*}*/
+        /*.circle-menu a:hover {*/
+        /*    transform: scale(1.2);*/
+        /*}*/
+        .circle-menu {
+            position: relative;
+            height: 500px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+        }
+
+        .circle-menu a {
+            position: absolute;
+            width: 300px; /* 设置按钮宽度 */
+            height: 86px; /* 设置按钮高度 */
+            font-size: 40px; /* 设置字体大小 */
+            background: linear-gradient(45deg, transparent 5%, #2c2c2c 5%);
+            border: 0;
+            color: #fff;
+            letter-spacing: 3px;
+            line-height: 88px; /* 设置行高 */
+            box-shadow: 6px 0px 0px #F8F005;
+            outline: transparent;
+            position: relative;
+            transition: background-color 0.3s; /* 添加背景颜色过渡 */
+        }
+
+        .circle-menu a::after {
+            --slice-0: inset(50% 50% 50% 50%);
+            --slice-1: inset(80% -6px 0 0);
+            --slice-2: inset(50% -6px 30% 0);
+            --slice-3: inset(10% -6px 85% 0);
+            --slice-4: inset(40% -6px 43% 0);
+            --slice-5: inset(80% -6px 5% 0);
+            content: attr(data-text); /* 使用data-text属性作为按钮文本 */
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 3%, #00E6F6 3%, #00E6F6 5%, #2c2c2c 5%);
+            text-shadow: -3px -3px 0px #F8F005, 3px 3px 0px #00E6F6;
+            clip-path: var(--slice-0);
+        }
+
+        .circle-menu a:hover::after {
+            animation: 1s glitch; /* 设置延时1秒，定义glitch变量在在里面设置动画 */
+            animation-timing-function: steps(2, end);
+        }
+
+        @keyframes glitch {
+            0% { clip-path: var(--slice-1); transform: translate(-20px, -10px); }
+            10% { clip-path: var(--slice-3); transform: translate(10px, 10px); }
+            20% { clip-path: var(--slice-1); transform: translate(-10px, 10px); }
+            30% { clip-path: var(--slice-3); transform: translate(0px, 5px); }
+            40% { clip-path: var(--slice-2); transform: translate(-5px, 0px); }
+            50% { clip-path: var(--slice-3); transform: translate(5px, 0px); }
+            60% { clip-path: var(--slice-4); transform: translate(5px, 10px); }
+            70% { clip-path: var(--slice-2); transform: translate(-10px, 10px); }
+            80% { clip-path: var(--slice-5); transform: translate(20px, -10px); }
+            90% { clip-path: var(--slice-1); transform: translate(-10px, 0px); }
+            100% { clip-path: var(--slice-1); transform: translate(0); }
+        }
+
+        .circle-menu a:nth-child(1) {
+            transform: translate(-200px, -100px); /* Adjust these values as needed */
+        }
+
+        .circle-menu a:nth-child(2) {
+            transform: translate(100px, -150px); /* Adjust these values as needed */
+        }
+
+        .circle-menu a:nth-child(3) {
+            transform: translate(-150px, 100px); /* Adjust these values as needed */
+        }
+
+
+        .carousel-caption {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        #map {
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .game, .room {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .game img, .room img {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+        .floating-button {
+            position: fixed;
+            bottom: 60px;
+            right: 60px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(to bottom,#842029 ,#2c0b0e,#051b11,#2b3035);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            z-index: 1000; /* 设置一个较高的 z-index 值 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .floating-button:hover {
+            background-color: #cccccc;
+            transform: scale(1.1);
+        }
+        .floating-button:hover {
+            color: white; /* 按钮悬停时保持文本颜色为白色 */
+        }
+        a {
+            color: #ff0; /* 设置A标签文字颜色为黄色 */
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <nav class="navbar justify-content-between">
+        <img src="/pic/OIP-C.jpg" alt="LOGO" style="height: 100px;">
+        <div>
+            <a href="/order-management/orders" data-text="ORDERS" style="font-family: Cyber; "><span>ORDERS</span></a>
+            <a href="#" data-toggle="modal" data-target="#loginModal" data-text="LOGIN" style="font-family: Cyber; "><span>LOGIN</span></a>
+        </div>
+    </nav>
+    <nav class="navbar justify-content-center">
+        <a href="/home/" data-text="HOME" style="font-family: Cyber; font-size: 50px"><span>HOME</span></a>
+        <a href="/games" data-text="GAME" style="font-family: Cyber; font-size: 50px"><span>GAME</span></a>
+        <a href="/review" data-text="COMMENTS" style="font-family: Cyber; font-size: 50px"><span>COMMENTS</span></a>
+
+        <a th:href="@{/home/rooms}" th:if="${loginRequired}" data-text="RESERVATION" style="font-family: Cyber; font-size: 50px"><span>RESERVATION</span></a>
+
+        <a th:href="@{/home/rooms}" th:unless="${loginRequired}" data-text="RESERVATION" style="font-family: Cyber; font-size: 50px"><span>RESERVATION</span></a>
+        <a th:href="@{/home/suggestions}" th:if="${loginRequired}" data-text="SUGGESTION" style="font-family: Cyber; font-size: 50px"><span>SUGGESTION</span></a>
+        <a th:href="@{/home/suggestions}" th:unless="${loginRequired}" data-text="SUGGESTION" style="font-family: Cyber; font-size: 50px"><span>SUGGESTION</span></a>
+    </nav>
+</div>
+
+<!-- Carousel -->
+<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
+    </ol>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="/pic/ganbi.png" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="/pic/cuxiao.png" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="/pic/R-B.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="/pic/R-C.jpg" class="d-block w-100" alt="...">
+        </div>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+
+<!-- Circle Menu -->
+<!--<div class="circle-menu">-->
+<!--    <a href="#section1" style="width: 160px; height: 160px; top: 70px; left: 170px;">房间展示</a>-->
+<!--    <a href="#section2" style="width: 200px; height: 200px; top: 150px; left: 430px;">游戏展示</a>-->
+<!--    <a href="#section3" style="width: 180px; height: 180px; top: 90px; left: 900px;">地图</a>-->
+<!--</div>-->
+<!-- Room Showcase -->
+<div class="circle-menu">
+    <a href="#section1" data-text="房间展示">房屋展示</a>
+    <a href="#section2" data-text="游戏展示">游戏展示</a>
+    <a href="#section3" data-text="地图">地图</a>
+</div>
+<div id="section1" class="container mt-5">
+    <h2>房间展示</h2>
+    <div id="roomCarousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="/img1.png" class="d-block w-100" alt="Room 1">
+                <div class="carousel-caption d-none d-md-block">
+                    <h3>卓威豪华套房</h3>
+                    <p>配备卓威顶级电竞设备，畅玩各种游戏！</p>
+                    <a  href="/rooms/" data-text="DETAIL" style="font-family: Cyber; "><span>DETAIL</span></a>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="/img2.jpg" class="d-block w-100" alt="Room 2">
+                <div class="carousel-caption d-none d-md-block">
+                    <h3>ROG豪华套房</h3>
+                    <p>房间配备全套ROG全家桶，游玩无压力！</p>
+                    <a  href="/rooms/" data-text="DETAIL" style="font-family: Cyber; "><span>DETAIL</span></a>
+                </div>
+            </div>
+            <!-- 添加更多房间 -->
+        </div>
+        <a class="carousel-control-prev" href="#roomCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#roomCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+
+<!-- Game Showcase -->
+<div id="section2" class="container mt-5">
+    <h2>游戏展示</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="game">
+                <img src="/pic/CS.jpg" alt="Game 1">
+                <div>
+                    <h3>CS2</h3>
+                    <p>经典射击游戏</p>
+                    <a  href="/games" data-text="DETAIL" style="font-family: Cyber; "><span>DETAIL</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="game">
+                <img src="/pic/B.jpg" alt="Game 2">
+                <div>
+                    <h3>黑神话：悟空</h3>
+                    <p>国产3A</p>
+                    <a  href="/games" data-text="DETAIL" style="font-family: Cyber; "><span>DETAIL</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="game">
+                <img src="/pic/A.jpg" alt="Game 1">
+                <div>
+                    <h3>Apex Legend</h3>
+                    <p>科幻大逃杀</p>
+                    <a  href="/games" data-text="DETAIL" style="font-family: Cyber; "><span>DETAIL</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="game">
+                <img src="/pic/E.jpg" alt="Game 2">
+                <div>
+                    <h3>艾尔登法环</h3>
+                    <p>最佳游戏奖</p>
+                    <a  href="/games" data-text="DETAIL" style="font-family: Cyber; "><span>DETAIL</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 添加更多游戏 -->
+</div>
+
+<!-- Map Section -->
+<div id="section3" class="container mt-5">
+    <h2>地图</h2>
+    <div id="map"></div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">登录</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/home/login}" method="post" id="loginForm">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" class="form-control" id="username" name="username" required placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="请输入密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="userType">用户类型</label>
+                        <select class="form-control" id="userType" name="userType">
+                            <option value="user">顾客</option>
+                            <option value="manager">管理员</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">登录</button>
+                    <button type="button" class="btn btn-secondary" onclick="logout()">退出登录</button>
+                    <a href="#" onclick="showRegistrationModal()">注册</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="registrationModal" tabindex="-1" role="dialog" aria-labelledby="registrationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registrationModalLabel">注册</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/home/register}" method="post" id="registrationForm" onsubmit="return handleFormSubmit(event)">
+                    <!-- Existing form fields -->
+                    <div class="form-group">
+
+                        <label for="newUsername">用户名</label>
+                        <input type="text" class="form-control" id="newUsername" name="newUsername" required placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">密码</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required placeholder="请输入密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="idCardNumber">身份证</label>
+                        <input type="text" class="form-control" id="idCardNumber" name="idCardNumber" required placeholder="请输入身份证号码">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="请输入姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">手机号</label>
+                        <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required placeholder="请输入手机号">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" class="form-control" id="email" name="email" required placeholder="请输入邮箱">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="sendVerificationCode()">发送验证码</button>
+                    <div class="form-group mt-3">
+                        <label for="verificationCode">验证码</label>
+                        <input type="text" class="form-control" id="verificationCode" name="verificationCode" required placeholder="请输入验证码">
+                    </div>
+                    <!-- New agreement section -->
+                    <div class="form-group mt-3">
+                        <input type="checkbox" id="agreementCheckbox" required>
+                        <label for="agreementCheckbox">我已阅读并同意 <a href="#" data-toggle="modal" data-target="#agreementModal">用户协议</a></label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">注册</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agreement Modal -->
+<div class="modal fade" id="agreementModal" tabindex="-1" role="dialog" aria-labelledby="agreementModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="agreementModalLabel" style="color: black;">用户协议</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="color: black;">
+                <p>一、【协议的范围】
+                    1.1 本协议是您与腾讯之间关于您注册、登录、使用本产品，以及使用本服务所订立的协议。
+
+                    1.2 本协议的内容，包括但不限于以下与本产品和/或本服务相关的协议、规则、规范、条款及腾讯已经发布的或将来可能发布的各类协议、规则、规范、条款等，包括但不限于《腾讯统一身份隐私保护指引》。所有规则为本协议不可分割的一部分，与协议正文具有同等法律效力。腾讯有权根据需要不定时地制定、修改本协议或各类规则，如本协议及规则有任何变更，一切变更以本产品最新公布的内容为准。经修订的协议、规则一经公布，立即自动生效，对新协议、规则生效之后注册的用户发生法律效力。对于协议、规则生效之前注册的用户，若用户在新规则生效后继续使用本产品提供的各项服务，则表明用户已充分阅读并认可和同意遵守新的协议或规则。若您拒绝接受新的协议和规则，您必须放弃使用腾讯统一身份提供的各项服务。
+
+                    1.3 如果您是企业用户，鉴于企业可以定制化某些服务或功能，当本协议规定的与您所在企业所提供的相关服务、说明等不一致时，请以您所在企业提供的为准。
+
+                    二、【关于本产品和本服务】
+                    2.1 本产品是指腾讯开发并按照本协议及腾讯其他协议、规则之约定授权用户注册、登录、使用的腾讯统一身份产品
+
+                    2.1.1 用户可以通过本产品使用应用门户、单点登录、主职架构管理等服务，具体服务以本平台实时提供的为准。
+
+                    2.1.2 用户可以创建自己的企业，并且发送激活链接邀请相关人员加入。收到邀请的人员按本服务要求完成注册后即可加入相关企业。团队创建者拥有企业成员权限管理、企业信息修改等企业管理权限。
+
+                    2.2 您知晓并同意，腾讯可能会根据需要更新或调整本服务的内容。
+
+                    2.3 您可以通过电脑、手机等终端以客户端、网页等形式使用本服务，具体以腾讯提供的为准，同时，腾讯会不断丰富您使用本服务的终端、形式等。当您使用本服务时，您应选择与您的终端、系统等相匹配的本产品版本，否则，您可能无法正常使用本服务。
+
+                    2.4 如您是企业用户，您可以申请腾讯统一身份企业账号并设置管理账号，您可通过该管理账号上传和管理组织成员架构，邀请组织成员加入成为您的最终用户。
+
+                    2.5 腾讯给予您一项不可转让及非排他性的许可，以按照本协议及腾讯其他协议、规则限定的范围和方式使用本产品。
+
+                    2.5.1 您可以为非商业目的在单一台终端设备上注册、登录、使用本产品。
+
+                    2.5.2 本条及本协议其他条款未明示授权的其他一切权利仍由腾讯保留，您在行使这些权利时须另外取得腾讯的书面许可。腾讯如果未行使前述任何权利，并不构成对该权利的放弃。
+
+                    2.6 腾讯可能根据实际需要对本服务中收费服务的收费标准、方式进行修改和变更，腾讯也可能会对部分免费服务开始收费。前述修改、变更或开始收费前，腾讯将在相应服务页面进行提前通知或公告。如果您不同意上述修改、变更或付费内容，您可以选择停止使用该服务。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function sendVerificationCode() {
+        const email = document.getElementById('email').value;
+        fetch('/home/sendVerificationCode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email })
+        }).then(response => {
+            if (response.ok) {
+                alert('验证码已发送');
+            } else {
+                alert('发送验证码失败');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+<script>
+    function showRegistrationModal() {
+        $('#registrationModal').modal('show');
+    }
+</script>
+<script>
+    function logout() {
+        fetch('/home/logout', { // 修改为正确的后端路由
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("成功退出登录");
+                    window.location.href = "/home/"; // 重定向到主页，根据实际路径修改
+                } else {
+                    throw new Error('退出登录失败');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("退出登录失败，请稍后重试");
+            });
+    }
+</script>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+<script src="https://api.map.baidu.com/api?v=3.0&ak=nSxiPohfziUaCuONe4ViUP2N"></script>
+<script>
+    function initMap() {
+        var map = new BMap.Map("map");
+        var point = new BMap.Point(115.835044, 28.656991); // 南昌市的经纬度
+        map.centerAndZoom(point, 15);
+
+        // 添加缩放控件
+        map.addControl(new BMap.NavigationControl());
+
+        var marker = new BMap.Marker(point);
+        map.addOverlay(marker);
+        marker.setAnimation(BMAP_ANIMATION_BOUNCE); // 跳动的动画
+
+        // 添加搜索功能
+        var localSearch = new BMap.LocalSearch(map, {
+            renderOptions: { map: map, autoViewport: true }
+        });
+
+        function search(keyword) {
+            localSearch.search(keyword);
+        }
+
+        // 创建示例按钮
+        var examples = ["地铁站", "火车站", "飞机场"];
+        var container = document.createElement('div');
+        container.style.position = 'absolute';
+        container.style.top = '10px';
+        container.style.right = '10px';
+        container.style.backgroundColor = 'white';
+        container.style.padding = '10px';
+        container.style.border = '1px solid #ccc';
+        container.style.borderRadius = '5px';
+        container.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
+        examples.forEach(function(example) {
+            var button = document.createElement('button');
+            button.innerText = example;
+            button.style.margin = '5px';
+            button.style.padding = '10px 15px';
+            button.style.border = 'none';
+            button.style.borderRadius = '3px';
+            button.style.backgroundColor = '#007BFF';
+            button.style.color = 'white';
+            button.style.cursor = 'pointer';
+            button.style.fontSize = '14px';
+            button.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+            button.onmouseover = function() {
+                button.style.backgroundColor = '#0056b3';
+            };
+            button.onmouseout = function() {
+                button.style.backgroundColor = '#007BFF';
+            };
+            button.onclick = function() {
+                search(example);
+            };
+            container.appendChild(button);
+        });
+        map.getContainer().appendChild(container);
+    }
+
+
+
+    // JavaScript方法来判断登录成功或失败
+    function handleLoginResponse(loginSuccess) {
+        if (loginSuccess) {
+            alert('登录成功！'); // 显示登录成功的弹窗
+        } else {
+            alert('账号或密码错误'); // 显示登录失败的弹窗
+        }
+    }
+
+    // 假设loginSuccess是从后端传递过来的登录成功标志
+    var loginSuccess = [[${loginSuccess}]];
+    handleLoginResponse(loginSuccess);
+
+    // 初始化地图
+    window.onload = function() {
+        initMap();
+    };
+
+</script>
+
+<a href="/webSocket/chat" class="floating-button">客服</a>
+</body>
+</html>

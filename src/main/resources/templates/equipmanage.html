@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Hotel Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            width: 200px;
+            float: left;
+            margin-right: 20px;
+        }
+        .content {
+            margin-left: 0; /* 确保与菜单按钮左对齐 */
+        }
+        .offcanvas {
+            width: 250px;
+            background-color: black;
+            color: white;
+        }
+        .info-block {
+            background-color: #4169E1;
+            color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+        }
+        .header h1 {
+            margin-right: 20px;
+        }
+        .header img {
+            width: 474px;
+            height: 266px;
+        }
+        .modal-content {
+            background-color: black;
+            color: white;
+        }
+        .btn-close-white {
+            filter: invert(1);
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="header">
+        <img th:src="@{/pic/OIP-C.jpg}">
+        <h1>Hotel Management System</h1>
+    </div>
+    <div class="navbar">
+        <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">菜单</button>
+    </div>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasMenuLabel">菜单</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/esports-equipment/'">设备管理</button>
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/rooms'">房间管理</button>
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/order-management/'">订单管理</button>
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/sales'">财务报表</button>
+            <button class="btn btn-primary w-100 mb-2" onclick="location.href='/suggestion/'">用户建议</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>Esports Equipment Management</h2>
+
+        <!-- Display Result -->
+        <div th:if="${allEsportsEquipment}">
+            <div th:each="equipment : ${allEsportsEquipment}" class="info-block">
+                <p><strong>ID:</strong> <span th:text="${equipment.equipment_id}"></span></p>
+                <p><strong>Name:</strong> <span th:text="${equipment.equipment_name}"></span></p>
+                <p><strong>Type:</strong> <span th:text="${equipment.equipment_type}"></span></p>
+                <p><strong>Parameter Info:</strong> <span th:text="${equipment.parameter_info}"></span></p>
+                <button class="btn btn-warning" th:attr="data-id=${equipment.equipment_id}" onclick="openUpdateModal(this)">修改</button>
+                <button class="btn btn-danger" th:attr="data-id=${equipment.equipment_id}" onclick="deleteEquipment(this)">删除</button>
+            </div>
+        </div>
+        <div th:if="${esportsEquipment}">
+            <div class="info-block">
+                <p><strong>ID:</strong> <span th:text="${esportsEquipment.equipment_id}"></span></p>
+                <p><strong>Name:</strong> <span th:text="${esportsEquipment.equipment_name}"></span></p>
+                <p><strong>Type:</strong> <span th:text="${esportsEquipment.equipment_type}"></span></p>
+                <p><strong>Parameter Info:</strong> <span th:text="${esportsEquipment.parameter_info}"></span></p>
+            </div>
+        </div>
+
+        <!-- Add and Get Buttons -->
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">增加设备</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#getModal">查询设备</button>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">增加设备</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addForm" th:action="@{/esports-equipment/add}" method="post">
+                    <div class="mb-3">
+                        <label for="equipmentName" class="form-label">Name:</label>
+                        <input type="text" class="form-control" id="equipmentName" name="equipmentName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="equipmentType" class="form-label">Type:</label>
+                        <input type="text" class="form-control" id="equipmentType" name="equipmentType">
+                    </div>
+                    <div class="mb-3">
+                        <label for="parameterInfo" class="form-label">Parameter Info:</label>
+                        <input type="text" class="form-control" id="parameterInfo" name="parameterInfo">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Equipment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Get Modal -->
+<div class="modal fade" id="getModal" tabindex="-1" aria-labelledby="getModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="getModalLabel">查询设备</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="getForm" th:action="@{/esports-equipment/select}" method="get">
+                    <div class="mb-3">
+                        <label for="equipmentId" class="form-label">Enter ID:</label>
+                        <input type="number" class="form-control" id="equipmentId" name="equipmentId">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Get Equipment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">修改设备</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateForm" th:action="@{/esports-equipment/update}" method="post">
+                    <input type="hidden" id="updateId" name="updateId">
+                    <div class="mb-3">
+                        <label for="updateName" class="form-label">New Name:</label>
+                        <input type="text" class="form-control" id="updateName" name="updateName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateType" class="form-label">New Type:</label>
+                        <input type="text" class="form-control" id="updateType" name="updateType">
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateParameter" class="form-label">New Parameter Info:</label>
+                        <input type="text" class="form-control" id="updateParameter" name="updateParameter">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Equipment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function openUpdateModal(button) {
+        var id = button.getAttribute("data-id");
+        document.getElementById("updateId").value = id;
+        var updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+        updateModal.show();
+    }
+
+    function deleteEquipment(button) {
+        var id = button.getAttribute("data-id");
+        if (confirm("Are you sure you want to delete this equipment?")) {
+            var form = document.createElement("form");
+            form.method = "post";
+            form.action = "/esports-equipment/delete";
+            var input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "deleteId";
+            input.value = id;
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+</body>
+</html>
